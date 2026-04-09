@@ -1,0 +1,80 @@
+# SPDX-FileCopyrightText: 2025 DESY and the Constellation authors
+# SPDX-License-Identifier: CC0-1.0
+
+stages:
+  - lint
+  - format
+
+variables:
+  PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
+
+.python-venv:
+  cache:
+    - key: pip-cache
+      paths:
+        - $PIP_CACHE_DIR/
+  before_script:
+    - python3 -m venv venv
+    - source venv/bin/activate
+    - pip install --upgrade pip setuptools
+    - pip install --no-build-isolation -e .[dev]
+
+.python-3.11:
+  image: tollerort.desy.de/hub.docker.com/python:3.11
+
+# lint stage
+
+.lint:
+  stage: lint
+  needs: []
+
+lint:basedpyright:
+  extends:
+    - .lint
+    - .python-venv
+    - .python-3.11
+  script:
+    - basedpyright src --gitlabcodequality code-quality-report.json
+  artifacts:
+    reports:
+      codequality: code-quality-report.json
+
+lint:ruff:
+  extends:
+    - .lint
+    - .python-venv
+    - .python-3.11
+  script:
+    - ruff check --output-format=gitlab | tee code-quality-report.json
+  artifacts:
+    reports:
+      codequality: code-quality-report.json
+
+# format stage
+
+.format:
+  stage: format
+  needs: []
+
+format:ruff:
+  extends:
+    - .format
+    - .python-venv
+    - .python-3.11
+  script:
+    - ruff format --diff
+
+format:reuse:
+  extends: .format
+  image: tollerort.desy.de/hub.docker.com/fsfe/reuse:latest
+  script:
+    - reuse lint
+
+format:codespell:
+  extends:
+    - .format
+    - .python-venv
+    - .python-3.11
+  script:
+    - pip install codespell
+    - codespell
