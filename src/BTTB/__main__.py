@@ -6,11 +6,11 @@ SPDX-License-Identifier: EUPL-1.2
 from constellation.core.logging import setup_cli_logging
 from constellation.core.satellite import SatelliteArgumentParser
 
-from .Template import Template
+from .BTTB import BTTB
 
 
 def main(args=None):
-    """Template satellite"""
+    """BTTB satellite"""
 
     # Get a dict of the parsed arguments
     parser = SatelliteArgumentParser(description=main.__doc__)
@@ -20,7 +20,7 @@ def main(args=None):
     setup_cli_logging(args.pop("level"))
 
     # Start satellite with remaining args
-    s = Template(**args)
+    s = BTTB(**args)
     s.run_satellite()
 
 
