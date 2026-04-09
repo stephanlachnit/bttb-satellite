@@ -28,6 +28,7 @@ classifiers = [
 requires-python = ">=3.11"
 dependencies = [
     "ConstellationDAQ",
+    "pyserial",
 ]
 
 [project.scripts]
@@ -37,8 +38,7 @@ SatelliteBTTB = "BTTB.__main__:main"
 BTTB = "BTTB"
 
 [project.urls]
-Homepage = "TODO"
-Repository = "TODO"
+Repository = "https://github.com/stephanlachnit/bttb-satellite"
 
 [project.optional-dependencies]
 dev = [
